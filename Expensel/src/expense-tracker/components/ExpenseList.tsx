@@ -1,3 +1,8 @@
+import { useToast } from "@chakra-ui/react";
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { BASE_URL } from "../../constat";
+
 interface Expense {
     id:number;
     description: string;
@@ -5,12 +10,45 @@ interface Expense {
     category: string;
 }
 
-interface ExpenseProps {
+export interface ExpenseProps {
     expenses: Expense [];
     onDelete: (id:number) => void;
 }
 
 const ExpenseList = ({expenses,onDelete}:ExpenseProps) => {
+
+  const [currentData, setCurrentData] = useState<Expense>({} as Expense);
+  const [data, setData] = useState<Expense[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [error, setError] = useState("");
+
+  const toast = useToast();
+
+  const fetchData = () => {
+    setIsLoading(true);
+    axios
+    .get(BASE_URL+"Expense")
+    .then((res) => {
+      setData(res.data);
+      console.log(res);
+      console.log(data);
+      
+      
+    })
+    .catch(error => {
+      console.log(error);
+      setError(error);
+      
+  })
+  .finally(() => {
+      setIsLoading(false)
+  })
+  console.log(data);
+  }
+
+  useEffect(() => {
+    fetchData();
+}, [])
 
     if(expenses.length === 0)
         return null;
